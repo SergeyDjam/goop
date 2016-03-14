@@ -1,0 +1,86 @@
+<html>
+<header>
+<title>Goop - Asterisk Panel</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1>Peers</h1>
+                <div class="card-columns peers-container"></div>
+
+                <h1>Queues</h1>
+                <div class="card-columns queues-container"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-2.2.1.min.js"/>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+
+<script>
+
+function get_queues() {
+    $.ajax({
+        url: "/list/queues",
+        dataType: 'json',
+        success: function(data) {
+            $.each(data, function(i, list) {
+                $.each(list, function(i, item) {
+                    title = item.number;
+                    description = "Active calls: " + item.active_calls;
+                    template = cardTemplate(title, description)
+                    $(".queues-container").append(template);
+                });
+            });
+        }
+    });
+}
+
+function get_peers() {
+    $.ajax({
+        url: "/list/peers",
+        dataType: 'json',
+        success: function(data) {
+            $.each(data, function(i, list) {
+                $.each(list, function(i, item) {
+                    if (item.username || item.callerid) {
+                        title = ""
+                        description = ""
+
+                        if (item.username)
+                            title = item.username;
+                        else if (item.callerid)
+                            title += item.callerid;
+
+                        if (item.username)
+                            description = "Device name: " + item.username;
+                        if (item.type)
+                            description += "Type: " + item.type;
+                        if (item.callerid)
+                            description += "<br>CallerID: " + item.callerid
+
+                        template = cardTemplate(title, description)
+                        $(".peers-container").append(template);
+                    }
+                });
+            });
+        }
+    });
+}
+
+function cardTemplate(title, description) {
+    return `<div class="card card-block">
+              <h4 class="card-title">`+title+`</h4>
+              <p class="card-text">`+description+`</p>
+            </div>`
+}
+
+
+$(document).ready(function() {
+    get_peers();
+    get_queues();
+});
+
+</script>
+</html>
