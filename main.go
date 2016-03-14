@@ -7,7 +7,7 @@ import (
     "github.com/heltonmarx/goami/ami"
     "encoding/json"
     "net/http"
-	"html/template"
+    "html/template"
 )
 
 func connect() (*ami.Socket, string, bool) {
@@ -20,7 +20,7 @@ func connect() (*ami.Socket, string, bool) {
         fmt.Printf("Connect error (%v)\n", err)
     }
 
-    ret, err := ami.Login(socket, "admin", "ipsafe", "Off", uuid)
+    ret, err := ami.Login(socket, "admin", "password", "Off", uuid)
     if err != nil || ret == false {
         fmt.Printf("login error (%v)\n", err)
     }
